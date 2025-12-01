@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Remote Work Monitor
 
 A comprehensive full-stack Python web application for office remote work monitoring with face recognition, task management, and analytics.
@@ -306,3 +307,6 @@ For support and questions:
 ---
 
 **Note**: This application is designed for legitimate workplace monitoring with proper user consent and compliance with applicable privacy laws and regulations.
+=======
+# 3d-office
+>>>>>>> 08a7d7fbc74e7fcff8bc25fe080d4874ef012e99
