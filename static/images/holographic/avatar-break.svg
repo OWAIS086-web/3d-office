@@ -1,0 +1,49 @@
+<svg width="60" height="80" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="headGradient" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#FFE4B5;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#DEB887;stop-opacity:0.7" />
+    </radialGradient>
+    <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF8C00;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:0.6" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Holographic Aura -->
+  <circle cx="30" cy="25" r="28" fill="none" stroke="#ffaa00" stroke-width="2" opacity="0.3" filter="url(#glow)">
+    <animate attributeName="r" values="25;30;25" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Head -->
+  <circle cx="30" cy="25" r="20" fill="url(#headGradient)" stroke="#ffaa00" stroke-width="2" filter="url(#glow)"/>
+  
+  <!-- Face Features (sleepy) -->
+  <path d="M 22 22 Q 25 20 28 22" stroke="#333" stroke-width="1.5" fill="none" opacity="0.7"/>
+  <path d="M 32 22 Q 35 20 38 22" stroke="#333" stroke-width="1.5" fill="none" opacity="0.7"/>
+  <path d="M 25 32 Q 30 30 35 32" stroke="#333" stroke-width="1.5" fill="none" opacity="0.7"/>
+  
+  <!-- Body -->
+  <rect x="20" y="45" width="20" height="25" rx="8" fill="url(#bodyGradient)" stroke="#ffaa00" stroke-width="2" filter="url(#glow)"/>
+  
+  <!-- Coffee Cup -->
+  <rect x="42" y="35" width="8" height="10" rx="2" fill="#8B4513" stroke="#ffaa00" stroke-width="1" opacity="0.8"/>
+  <ellipse cx="46" cy="35" rx="4" ry="2" fill="#654321"/>
+  <path d="M 50 38 Q 52 38 52 40" stroke="#ffaa00" stroke-width="1" fill="none"/>
+  
+  <!-- Steam -->
+  <path d="M 44 30 Q 45 25 44 20" stroke="#ffaa00" stroke-width="1" fill="none" opacity="0.6">
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="2s" repeatCount="indefinite"/>
+  </path>
+  <path d="M 48 30 Q 47 25 48 20" stroke="#ffaa00" stroke-width="1" fill="none" opacity="0.6">
+    <animate attributeName="opacity" values="0.2;0.6;0.2" dur="2s" repeatCount="indefinite"/>
+  </path>
+</svg>

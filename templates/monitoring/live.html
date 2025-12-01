@@ -1,0 +1,520 @@
+{% extends "base.html" %}
+
+{% block title %}Live Monitoring - Remote Work Monitor{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900">Live Monitoring</h1>
+            <p class="text-gray-600">Real-time face recognition and activity monitoring</p>
+        </div>
+        <div class="flex space-x-3">
+            <button id="startMonitoringBtn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+                <i class="fas fa-play mr-2"></i>Start Monitoring
+            </button>
+            <button id="stopMonitoringBtn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 hidden">
+                <i class="fas fa-stop mr-2"></i>Stop Monitoring
+            </button>
+        </div>
+    </div>
+
+    <!-- Status Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-video text-2xl text-primary"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Monitoring Status</dt>
+                            <dd id="monitoringStatus" class="text-lg font-medium text-gray-900">Inactive</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-users text-2xl text-success"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Users Online</dt>
+                            <dd id="usersOnline" class="text-lg font-medium text-gray-900">0</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden shadow rounded-lg">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-triangle text-2xl text-warning"></i>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Active Alerts</dt>
+                            <dd id="activeAlerts" class="text-lg font-medium text-gray-900">0</dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Live Video Feed -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    <i class="fas fa-camera mr-2"></i>Live Video Feed
+                </h3>
+                <div class="relative">
+                    <video id="liveVideo" class="w-full h-64 bg-gray-900 rounded-lg" autoplay muted></video>
+                    <div id="videoOverlay" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg hidden">
+                        <div class="text-white text-center">
+                            <i class="fas fa-video-slash text-4xl mb-2"></i>
+                            <p>Camera not available</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-center space-x-4">
+                    <button id="startCameraBtn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-secondary">
+                        <i class="fas fa-camera mr-2"></i>Start Camera
+                    </button>
+                    <button id="stopCameraBtn" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 hidden">
+                        <i class="fas fa-stop mr-2"></i>Stop Camera
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detection Log -->
+        <div class="bg-white shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                    <i class="fas fa-list mr-2"></i>Detection Log
+                </h3>
+                <div id="detectionLog" class="space-y-2 max-h-64 overflow-y-auto">
+                    <div class="text-center text-gray-500 py-4">
+                        No detections yet
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Real-time Alerts -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                <i class="fas fa-bell mr-2"></i>Real-time Alerts
+            </h3>
+            <div id="alertsContainer" class="space-y-3">
+                <!-- Alerts will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- User Activity Status -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                <i class="fas fa-user-check mr-2"></i>User Activity Status
+            </h3>
+            <div id="userActivityStatus" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- User status cards will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let stream = null;
+    let monitoringActive = false;
+    let socket = io();
+    let monitoringInterval = null;
+    let lastFaceDetected = Date.now();
+    let absenceTimeout = 60000; // 1 minute in milliseconds
+    let canvas = document.createElement('canvas');
+    let isLoggedIn = true;
+
+    // DOM elements
+    const startMonitoringBtn = document.getElementById('startMonitoringBtn');
+    const stopMonitoringBtn = document.getElementById('stopMonitoringBtn');
+    const startCameraBtn = document.getElementById('startCameraBtn');
+    const stopCameraBtn = document.getElementById('stopCameraBtn');
+    const liveVideo = document.getElementById('liveVideo');
+    const videoOverlay = document.getElementById('videoOverlay');
+    const detectionLog = document.getElementById('detectionLog');
+    const alertsContainer = document.getElementById('alertsContainer');
+
+    // Start monitoring
+    startMonitoringBtn.addEventListener('click', function() {
+        fetch('/monitoring/start_monitoring', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                monitoringActive = true;
+                startMonitoringBtn.classList.add('hidden');
+                stopMonitoringBtn.classList.remove('hidden');
+                updateMonitoringStatus('Active');
+                addDetectionLog('Monitoring started', 'success');
+            } else {
+                showAlert('Error', data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error starting monitoring:', error);
+            showAlert('Error', 'Failed to start monitoring', 'error');
+        });
+    });
+
+    // Stop monitoring
+    stopMonitoringBtn.addEventListener('click', function() {
+        fetch('/monitoring/stop_monitoring', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                monitoringActive = false;
+                startMonitoringBtn.classList.remove('hidden');
+                stopMonitoringBtn.classList.add('hidden');
+                updateMonitoringStatus('Inactive');
+                addDetectionLog('Monitoring stopped', 'info');
+            } else {
+                showAlert('Error', data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error stopping monitoring:', error);
+            showAlert('Error', 'Failed to stop monitoring', 'error');
+        });
+    });
+
+    // Start camera with continuous monitoring
+    startCameraBtn.addEventListener('click', function() {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(mediaStream) {
+                    stream = mediaStream;
+                    liveVideo.srcObject = stream;
+                    videoOverlay.classList.add('hidden');
+                    startCameraBtn.classList.add('hidden');
+                    stopCameraBtn.classList.remove('hidden');
+                    addDetectionLog('Camera started', 'success');
+                    
+                    // Start continuous monitoring
+                    startContinuousMonitoring();
+                })
+                .catch(function(error) {
+                    console.error('Error accessing camera:', error);
+                    videoOverlay.classList.remove('hidden');
+                    showAlert('Camera Error', 'Could not access camera. Please check permissions.', 'error');
+                });
+        } else {
+            showAlert('Error', 'Camera not supported', 'error');
+        }
+    });
+
+    // Stop camera and monitoring
+    stopCameraBtn.addEventListener('click', function() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+            liveVideo.srcObject = null;
+            videoOverlay.classList.remove('hidden');
+            startCameraBtn.classList.remove('hidden');
+            stopCameraBtn.classList.add('hidden');
+            addDetectionLog('Camera stopped', 'info');
+            
+            // Stop continuous monitoring
+            stopContinuousMonitoring();
+        }
+    });
+    
+    // Continuous monitoring functions
+    function startContinuousMonitoring() {
+        if (monitoringInterval) {
+            clearInterval(monitoringInterval);
+        }
+        
+        monitoringActive = true;
+        updateMonitoringStatus('Active');
+        addDetectionLog('Continuous monitoring started', 'success');
+        
+        // Check face every 3 seconds
+        monitoringInterval = setInterval(checkFacePresence, 3000);
+    }
+    
+    function stopContinuousMonitoring() {
+        if (monitoringInterval) {
+            clearInterval(monitoringInterval);
+            monitoringInterval = null;
+        }
+        
+        monitoringActive = false;
+        updateMonitoringStatus('Inactive');
+        addDetectionLog('Continuous monitoring stopped', 'info');
+    }
+    
+    function checkFacePresence() {
+        if (!stream || !monitoringActive) return;
+        
+        // Draw current video frame to canvas
+        canvas.width = liveVideo.videoWidth;
+        canvas.height = liveVideo.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(liveVideo, 0, 0, canvas.width, canvas.height);
+        
+        // Convert to blob and send to server
+        canvas.toBlob(function(blob) {
+            const formData = new FormData();
+            formData.append('face_image', blob, 'face-check.jpg');
+            
+            fetch('/monitoring/continuous_face_check', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.face_recognized) {
+                        // Face recognized - update last detection time
+                        lastFaceDetected = Date.now();
+                        addDetectionLog('Face verified', 'success');
+                    } else if (data.sleep_detected) {
+                        // No face detected - check for timeout
+                        const timeSinceLastFace = Date.now() - lastFaceDetected;
+                        
+                        if (timeSinceLastFace > absenceTimeout && isLoggedIn) {
+                            // Auto logout after absence timeout
+                            addDetectionLog('No face detected for 1 minute - auto logout', 'warning');
+                            showAlert('Auto Logout', 'You have been automatically logged out due to absence/sleep detection', 'warning');
+                            performAutoLogout();
+                        }
+                    } else {
+                        // Unauthorized face detected
+                        addDetectionLog('Unauthorized face detected', 'error');
+                        showAlert('Security Alert', 'Unauthorized person detected', 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error in face check:', error);
+            });
+        }, 'image/jpeg', 0.8);
+    }
+    
+    function performAutoLogout() {
+        isLoggedIn = false;
+        stopContinuousMonitoring();
+        
+        // Perform logout
+        fetch('/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '/auth/login';
+            }
+        })
+        .catch(error => {
+            console.error('Error during auto-logout:', error);
+            // Force redirect to login page after a short delay
+            setTimeout(() => {
+                window.location.href = '/auth/login';
+            }, 2000);
+        });
+    }
+
+    // Socket.IO event handlers
+    socket.on('face_verified', function(data) {
+        addDetectionLog(`Face verified for user ${data.user_id}`, 'success');
+        updateUserActivity(data.user_id, 'active');
+    });
+
+    socket.on('inactivity_alert', function(data) {
+        addDetectionLog(`Inactivity alert for user ${data.user_id} (${data.inactive_minutes} minutes)`, 'warning');
+        showAlert('Inactivity Alert', `User ${data.user_id} inactive for ${data.inactive_minutes} minutes`, 'warning');
+        updateUserActivity(data.user_id, 'inactive');
+    });
+
+    socket.on('unauthorized_access', function(data) {
+        addDetectionLog(`Unauthorized access detected (${data.detected_faces} faces, ${data.known_users} known)`, 'error');
+        showAlert('Security Alert', 'Unauthorized person detected in monitoring area', 'error');
+    });
+
+    // Update monitoring status
+    function updateMonitoringStatus(status) {
+        document.getElementById('monitoringStatus').textContent = status;
+        document.getElementById('monitoringStatus').className = status === 'Active' ? 
+            'text-lg font-medium text-green-600' : 'text-lg font-medium text-gray-900';
+    }
+
+    // Add detection log entry
+    function addDetectionLog(message, type) {
+        const logEntry = document.createElement('div');
+        logEntry.className = `flex items-center p-2 rounded-md ${
+            type === 'success' ? 'bg-green-50 border border-green-200' :
+            type === 'warning' ? 'bg-yellow-50 border border-yellow-200' :
+            type === 'error' ? 'bg-red-50 border border-red-200' :
+            'bg-blue-50 border border-blue-200'
+        }`;
+        
+        const icon = type === 'success' ? 'check-circle' :
+                    type === 'warning' ? 'exclamation-triangle' :
+                    type === 'error' ? 'exclamation-circle' : 'info-circle';
+        
+        const color = type === 'success' ? 'text-green-600' :
+                     type === 'warning' ? 'text-yellow-600' :
+                     type === 'error' ? 'text-red-600' : 'text-blue-600';
+        
+        logEntry.innerHTML = `
+            <i class="fas fa-${icon} ${color} mr-2"></i>
+            <span class="text-sm text-gray-700">${message}</span>
+            <span class="ml-auto text-xs text-gray-500">${new Date().toLocaleTimeString()}</span>
+        `;
+        
+        // Remove "No detections yet" message if it exists
+        const noDetections = detectionLog.querySelector('.text-center.text-gray-500');
+        if (noDetections) {
+            noDetections.remove();
+        }
+        
+        detectionLog.insertBefore(logEntry, detectionLog.firstChild);
+        
+        // Keep only last 20 entries
+        while (detectionLog.children.length > 20) {
+            detectionLog.removeChild(detectionLog.lastChild);
+        }
+    }
+
+    // Show alert
+    function showAlert(title, message, type) {
+        const alert = document.createElement('div');
+        alert.className = `p-4 rounded-md border-l-4 ${
+            type === 'success' ? 'bg-green-50 border-green-400' :
+            type === 'warning' ? 'bg-yellow-50 border-yellow-400' :
+            type === 'error' ? 'bg-red-50 border-red-400' :
+            'bg-blue-50 border-blue-400'
+        }`;
+        
+        const icon = type === 'success' ? 'check-circle' :
+                    type === 'warning' ? 'exclamation-triangle' :
+                    type === 'error' ? 'exclamation-circle' : 'info-circle';
+        
+        const color = type === 'success' ? 'text-green-600' :
+                     type === 'warning' ? 'text-yellow-600' :
+                     type === 'error' ? 'text-red-600' : 'text-blue-600';
+        
+        alert.innerHTML = `
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-${icon} ${color}"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium ${color}">${title}</h3>
+                    <div class="mt-2 text-sm text-gray-700">
+                        <p>${message}</p>
+                    </div>
+                </div>
+                <div class="ml-auto pl-3">
+                    <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        alertsContainer.insertBefore(alert, alertsContainer.firstChild);
+        
+        // Auto remove after 10 seconds
+        setTimeout(() => {
+            if (alert.parentElement) {
+                alert.remove();
+            }
+        }, 10000);
+    }
+
+    // Update user activity status
+    function updateUserActivity(userId, status) {
+        let userCard = document.querySelector(`[data-user-id="${userId}"]`);
+        if (!userCard) {
+            userCard = document.createElement('div');
+            userCard.className = 'p-3 bg-gray-50 rounded-md';
+            userCard.setAttribute('data-user-id', userId);
+            userCard.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-900">User ${userId}</h4>
+                        <p class="text-xs text-gray-500">Status: <span class="status-indicator">Unknown</span></p>
+                    </div>
+                    <div class="status-dot w-3 h-3 rounded-full"></div>
+                </div>
+            `;
+            document.getElementById('userActivityStatus').appendChild(userCard);
+        }
+        
+        const statusIndicator = userCard.querySelector('.status-indicator');
+        const statusDot = userCard.querySelector('.status-dot');
+        
+        if (status === 'active') {
+            statusIndicator.textContent = 'Active';
+            statusIndicator.className = 'status-indicator text-green-600';
+            statusDot.className = 'status-dot w-3 h-3 rounded-full bg-green-500';
+        } else if (status === 'inactive') {
+            statusIndicator.textContent = 'Inactive';
+            statusIndicator.className = 'status-indicator text-yellow-600';
+            statusDot.className = 'status-dot w-3 h-3 rounded-full bg-yellow-500';
+        }
+    }
+
+    // Update monitoring status periodically
+    setInterval(() => {
+        fetch('/monitoring/status')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('usersOnline').textContent = data.users_online || 0;
+                
+                if (data.active !== monitoringActive) {
+                    monitoringActive = data.active;
+                    if (monitoringActive) {
+                        startMonitoringBtn.classList.add('hidden');
+                        stopMonitoringBtn.classList.remove('hidden');
+                        updateMonitoringStatus('Active');
+                    } else {
+                        startMonitoringBtn.classList.remove('hidden');
+                        stopMonitoringBtn.classList.add('hidden');
+                        updateMonitoringStatus('Inactive');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching monitoring status:', error);
+            });
+    }, 5000);
+
+    // Initialize
+    updateMonitoringStatus('Inactive');
+</script>
+{% endblock %}

@@ -1,0 +1,127 @@
+<svg width="200" height="180" viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="buildingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0096FF;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#0064C8;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#003C96;stop-opacity:0.4" />
+    </linearGradient>
+    <linearGradient id="baseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00FFFF;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#0096FF;stop-opacity:0.6" />
+    </linearGradient>
+    <filter id="buildingGlow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Building Base Platform -->
+  <ellipse cx="100" cy="160" rx="80" ry="15" fill="url(#baseGradient)" stroke="#00FFFF" stroke-width="3" filter="url(#buildingGlow)"/>
+  
+  <!-- Building Main Structure -->
+  <rect x="60" y="60" width="80" height="100" rx="8" fill="url(#buildingGradient)" stroke="#00FFFF" stroke-width="3" filter="url(#buildingGlow)"/>
+  
+  <!-- Building Top -->
+  <polygon points="60,60 100,40 140,60" fill="url(#baseGradient)" stroke="#00FFFF" stroke-width="2" filter="url(#buildingGlow)"/>
+  
+  <!-- Floor Divisions -->
+  <line x1="60" y1="80" x2="140" y2="80" stroke="#00FFFF" stroke-width="2" opacity="0.6"/>
+  <line x1="60" y1="100" x2="140" y2="100" stroke="#00FFFF" stroke-width="2" opacity="0.6"/>
+  <line x1="60" y1="120" x2="140" y2="120" stroke="#00FFFF" stroke-width="2" opacity="0.6"/>
+  <line x1="60" y1="140" x2="140" y2="140" stroke="#00FFFF" stroke-width="2" opacity="0.6"/>
+  
+  <!-- Windows with Holographic Effects -->
+  <!-- Floor 1 -->
+  <rect x="70" y="65" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="90" y="65" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.8;0.4;0.8" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="110" y="65" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Floor 2 -->
+  <rect x="70" y="85" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="4s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="90" y="85" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.2;0.6;0.2" dur="4s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="110" y="85" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="4s" repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Floor 3 -->
+  <rect x="70" y="105" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.3;0.7;0.3" dur="2.5s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="90" y="105" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.7;0.3;0.7" dur="2.5s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="110" y="105" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.3;0.7;0.3" dur="2.5s" repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Floor 4 -->
+  <rect x="70" y="125" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.5;0.9;0.5" dur="3.5s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="90" y="125" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.9;0.5;0.9" dur="3.5s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="110" y="125" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.5;0.9;0.5" dur="3.5s" repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Floor 5 -->
+  <rect x="70" y="145" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="90" y="145" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="110" y="145" width="12" height="10" rx="2" fill="#00FFFF" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2s" repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Holographic Scan Lines -->
+  <line x1="60" y1="70" x2="140" y2="70" stroke="#00FFFF" stroke-width="1" opacity="0.6">
+    <animate attributeName="y1" values="60;160;60" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="y2" values="60;160;60" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="5s" repeatCount="indefinite"/>
+  </line>
+  
+  <!-- Building Outline Glow -->
+  <rect x="60" y="60" width="80" height="100" rx="8" fill="none" stroke="#00FFFF" stroke-width="1" opacity="0.3">
+    <animate attributeName="opacity" values="0.3;0.7;0.3" dur="4s" repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Floating Particles -->
+  <circle cx="50" cy="50" r="2" fill="#00FFFF" opacity="0.6">
+    <animate attributeName="cy" values="50;30;50" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="150" cy="45" r="2" fill="#00FFFF" opacity="0.6">
+    <animate attributeName="cy" values="45;25;45" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="30" r="2" fill="#00FFFF" opacity="0.6">
+    <animate attributeName="cy" values="30;10;30" dur="7s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="7s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Energy Beams -->
+  <line x1="100" y1="40" x2="100" y2="20" stroke="#00FFFF" stroke-width="3" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+  </line>
+  
+  <!-- Base Glow -->
+  <ellipse cx="100" cy="160" rx="80" ry="15" fill="none" stroke="#00FFFF" stroke-width="1" opacity="0.4">
+    <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite"/>
+  </ellipse>
+</svg>

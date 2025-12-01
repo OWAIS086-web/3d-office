@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="{{ url_for('static', filename='js/futuristic-alerts.js') }}"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(0, 40, 60, 0.2);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            animation: scan 4s infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #00ff88, #00aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #00aaff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00aaff;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #00aaff;
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.4);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #00aaff;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-size: 1rem;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00ff88, #00aaff);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+        }
+
+        .flash-success {
+            background: rgba(0, 255, 136, 0.2);
+            border-left-color: #00ff88;
+            color: #00ff88;
+        }
+
+        .flash-error {
+            background: rgba(255, 68, 68, 0.2);
+            border-left-color: #ff4444;
+            color: #ff4444;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00ff88, #00aaff);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #00aaff, #00ff88);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+
+        /* Firefox */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #00aaff rgba(0, 0, 0, 0.3);
+        }
+
+        /* Face Capture Styles */
+        .btn-capture {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn-capture:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        #video {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+        }
+
+        .face-captured {
+            color: #00ff88 !important;
+        }
+
+        .face-error {
+            color: #ff4444 !important;
+        }
+
+        #facePreview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('admin.dashboard') }}" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-user-plus"></i> Add New User</h1>
+            <p>Create a new user account</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="username">
+                    <i class="fas fa-user"></i> Username
+                </label>
+                <input type="text" id="username" name="username" class="form-control" 
+                       placeholder="Enter username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">
+                    <i class="fas fa-envelope"></i> Email Address
+                </label>
+                <input type="email" id="email" name="email" class="form-control" 
+                       placeholder="Enter email address" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">
+                    <i class="fas fa-lock"></i> Password
+                </label>
+                <input type="password" id="password" name="password" class="form-control" 
+                       placeholder="Enter password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="department">
+                    <i class="fas fa-building"></i> Department
+                </label>
+                <select id="department" name="department" class="form-control" required>
+                    <option value="">Select Department</option>
+                    {% for dept in departments %}
+                    <option value="{{ dept }}">{{ dept }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Face Upload Section -->
+            <div class="form-group">
+                <label>
+                    <i class="fas fa-camera"></i> Face Authentication Setup
+                </label>
+                <div style="text-align: center; margin: 15px 0;">
+                    <video id="video" width="300" height="200" autoplay style="border-radius: 10px; border: 2px solid rgba(0, 255, 255, 0.3); display: none;"></video>
+                    <canvas id="canvas" width="300" height="200" style="display: none;"></canvas>
+                    <div id="facePreview" style="width: 300px; height: 200px; margin: 0 auto; border: 2px dashed rgba(0, 255, 255, 0.3); border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.3);">
+                        <div style="text-align: center; color: rgba(255, 255, 255, 0.6);">
+                            <i class="fas fa-camera" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                            <p>Click to capture face for authentication</p>
+                        </div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin: 10px 0;">
+                    <button type="button" id="startCameraBtn" class="btn-capture" onclick="startCamera()">
+                        <i class="fas fa-video"></i> Start Camera
+                    </button>
+                    <button type="button" id="captureBtn" class="btn-capture" onclick="captureFace()" style="display: none;">
+                        <i class="fas fa-camera"></i> Capture Face
+                    </button>
+                    <button type="button" id="retakeBtn" class="btn-capture" onclick="retakeFace()" style="display: none;">
+                        <i class="fas fa-redo"></i> Retake
+                    </button>
+                </div>
+                <div id="faceStatus" style="text-align: center; margin-top: 10px; font-size: 0.9rem;"></div>
+                <input type="hidden" id="face_data" name="face_data">
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <i class="fas fa-shield-alt"></i> User Permissions
+                </label>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="is_admin" name="is_admin">
+                    <label for="is_admin">Grant Administrator Access</label>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Create User
+                </button>
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Camera and face capture functionality
+        let video, canvas, ctx;
+        let faceCaptured = false;
+        let stream = null;
+
+        function startCamera() {
+            video = document.getElementById('video');
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(mediaStream => {
+                    stream = mediaStream;
+                    video.srcObject = stream;
+                    video.style.display = 'block';
+                    document.getElementById('facePreview').style.display = 'none';
+                    document.getElementById('startCameraBtn').style.display = 'none';
+                    document.getElementById('captureBtn').style.display = 'inline-block';
+                    document.getElementById('faceStatus').innerHTML = 
+                        '<span style="color: #00aaff;"><i class="fas fa-info-circle"></i> Position your face in the camera and click capture</span>';
+                })
+                .catch(err => {
+                    console.error('Camera access denied:', err);
+                    document.getElementById('faceStatus').innerHTML = 
+                        '<span class="face-error"><i class="fas fa-exclamation-circle"></i> Camera access required for face authentication</span>';
+                });
+        }
+
+        function captureFace() {
+            if (!video.srcObject) {
+                FAlert.error('Camera not initialized');
+                return;
+            }
+
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/jpeg');
+            
+            // Stop camera
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            
+            // Hide video and show preview
+            video.style.display = 'none';
+            const preview = document.getElementById('facePreview');
+            preview.style.display = 'flex';
+            preview.innerHTML = `<img src="${imageData}" alt="Captured Face">`;
+            
+            // Update buttons
+            document.getElementById('captureBtn').style.display = 'none';
+            document.getElementById('retakeBtn').style.display = 'inline-block';
+            
+            // Store face data
+            document.getElementById('face_data').value = imageData;
+            document.getElementById('faceStatus').innerHTML = 
+                '<span class="face-captured"><i class="fas fa-check-circle"></i> Face captured successfully! User will be able to login with this face.</span>';
+            
+            faceCaptured = true;
+        }
+
+        function retakeFace() {
+            // Reset everything
+            faceCaptured = false;
+            document.getElementById('face_data').value = '';
+            document.getElementById('faceStatus').innerHTML = '';
+            
+            // Reset UI
+            const preview = document.getElementById('facePreview');
+            preview.style.display = 'flex';
+            preview.innerHTML = `
+                <div style="text-align: center; color: rgba(255, 255, 255, 0.6);">
+                    <i class="fas fa-camera" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>Click to capture face for authentication</p>
+                </div>
+            `;
+            
+            document.getElementById('startCameraBtn').style.display = 'inline-block';
+            document.getElementById('retakeBtn').style.display = 'none';
+        }
+
+        // Form validation
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            
+            form.addEventListener('submit', function(e) {
+                // Face capture is optional for admin-created users
+                // but show a confirmation if no face is captured
+                if (!faceCaptured) {
+                    e.preventDefault();
+                    FAlert.confirm(
+                        'No face has been captured for this user. They will need to set up face authentication during their first login. Continue?',
+                        'No Face Captured',
+                        function() {
+                            // User confirmed, submit the form
+                            const submitBtn = document.querySelector('.btn-primary');
+                            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating User...';
+                            submitBtn.disabled = true;
+                            form.submit();
+                        }
+                    );
+                    return;
+                }
+                
+                // Show loading state
+                const submitBtn = document.querySelector('.btn-primary');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating User...';
+                submitBtn.disabled = true;
+            });
+        });
+    </script>
+</body>
+</html>

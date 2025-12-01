@@ -1,0 +1,49 @@
+# Environment Configuration for Remote Work Monitor
+# Copy this file to .env and update the values
+
+# Flask Configuration
+SECRET_KEY=your-secret-key-here-change-in-production
+FLASK_ENV=development
+FLASK_DEBUG=True
+
+# Database Configuration
+# Using SQLite for simplicity (no external database required)
+DATABASE_URL=sqlite:///remote_work_monitor.db
+
+# For MySQL (if needed)
+# DATABASE_URL=mysql+pymysql://username:password@localhost:3306/remote_work_monitor
+
+# For PostgreSQL (if needed)
+# DATABASE_URL=postgresql://username:password@localhost:5432/remote_work_monitor
+
+# Face Recognition Settings
+FACE_ENCODING_MODEL=hog
+FACE_VERIFICATION_INTERVAL=300
+FACE_TOLERANCE=0.6
+
+# File Upload Settings
+UPLOAD_FOLDER=static/uploads
+MAX_CONTENT_LENGTH=16777216
+
+# Monitoring Settings
+INACTIVITY_THRESHOLD=300
+WORK_HOURS_START=9
+WORK_HOURS_END=17
+
+# Performance Scoring Weights
+TASK_COMPLETION_WEIGHT=0.4
+ACTIVITY_WEIGHT=0.3
+PUNCTUALITY_WEIGHT=0.3
+
+# Email Configuration (for notifications)
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USE_TLS=True
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+
+# Redis Configuration (for caching and sessions)
+REDIS_URL=redis://localhost:6379/0
+
+# WebSocket Configuration
+SOCKETIO_ASYNC_MODE=eventlet

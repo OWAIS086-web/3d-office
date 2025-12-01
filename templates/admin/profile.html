@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Profile - Remote Work Monitor{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="space-y-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Admin Profile</h1>
+                <p class="text-gray-600">Manage your admin account and system settings</p>
+            </div>
+            <div class="flex space-x-3">
+                <a href="{{ url_for('admin.dashboard') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Profile Settings -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Admin Information -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                            <i class="fas fa-user-shield mr-2"></i>Admin Information
+                        </h3>
+                        <form method="POST" action="{{ url_for('admin.update_profile') }}" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                                    <input type="text" name="username" id="username" value="{{ current_user.username }}"
+                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm"
+                                           readonly>
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                                    <input type="email" name="email" id="email" value="{{ current_user.email }}"
+                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
+                                </div>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-secondary">
+                                    <i class="fas fa-save mr-2"></i>Update Profile
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Admin Face Recognition -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                            <i class="fas fa-camera mr-2"></i>Admin Face Recognition
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="text-center">
+                                <div id="cameraContainer" class="relative inline-block">
+                                    <video id="adminVideo" width="320" height="240" autoplay muted class="rounded-lg border-2 border-gray-300"></video>
+                                    <canvas id="adminCanvas" width="320" height="240" class="hidden"></canvas>
+                                    <div id="cameraStatus" class="mt-2 text-sm text-gray-600">Camera not started</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-center space-x-4">
+                                <button id="startCameraBtn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+                                    <i class="fas fa-play mr-2"></i>Start Camera
+                                </button>
+                                <button id="capturePhotoBtn" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-secondary" disabled>
+                                    <i class="fas fa-camera mr-2"></i>Capture Photo
+                                </button>
+                                <button id="stopCameraBtn" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50" disabled>
+                                    <i class="fas fa-stop mr-2"></i>Stop Camera
+                                </button>
+                            </div>
+
+                            <form id="faceUpdateForm" method="POST" action="{{ url_for('admin.update_face') }}" enctype="multipart/form-data" class="hidden">
+                                <input type="hidden" name="face_image_data" id="faceImageData">
+                                <button type="submit" id="updateFaceBtn" class="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-secondary">
+                                    <i class="fas fa-upload mr-2"></i>Update Admin Face Recognition
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Settings -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+                            <i class="fas fa-cog mr-2"></i>System Settings
+                        </h3>
+                        <form method="POST" action="{{ url_for('admin.update_face') }}" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="monitoring_interval" class="block text-sm font-medium text-gray-700">Monitoring Interval (seconds)</label>
+                                    <input type="number" name="monitoring_interval" id="monitoring_interval" value="60" min="10" max="300"
+                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
+                                </div>
+                                <div>
+                                    <label for="sleep_threshold" class="block text-sm font-medium text-gray-700">Sleep Detection Threshold (minutes)</label>
+                                    <input type="number" name="sleep_threshold" id="sleep_threshold" value="5" min="1" max="30"
+                                           class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary sm:text-sm">
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" name="continuous_monitoring" id="continuous_monitoring" checked
+                                       class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                <label for="continuous_monitoring" class="ml-2 block text-sm text-gray-900">
+                                    Enable 24/7 Continuous Monitoring
+                                </label>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" name="auto_logout" id="auto_logout" checked
+                                       class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                <label for="auto_logout" class="ml-2 block text-sm text-gray-900">
+                                    Enable Auto-logout for Wrong Person Detection
+                                </label>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-secondary">
+                                    <i class="fas fa-save mr-2"></i>Save Settings
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Admin Status -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Admin Status</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Role</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    Administrator
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Status</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Active
+                                </span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Member Since</span>
+                                <span class="text-sm text-gray-900">{{ current_user.created_at.strftime('%B %Y') }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-600">Last Login</span>
+                                <span class="text-sm text-gray-900">
+                                    {% if current_user.last_login %}
+                                        {{ current_user.last_login.strftime('%m/%d/%Y %H:%M') }}
+                                    {% else %}
+                                        Never
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Status -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">System Status</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Monitoring</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Active
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Face Recognition</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Enabled
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Auto-logout</span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Enabled
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="bg-white shadow rounded-lg">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <a href="{{ url_for('admin.user_activity') }}" class="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                <i class="fas fa-chart-line mr-2"></i>User Activity
+                            </a>
+                            <a href="{{ url_for('admin.analytics') }}" class="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                <i class="fas fa-analytics mr-2"></i>Analytics
+                            </a>
+                            <a href="{{ url_for('monitoring.live') }}" class="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                <i class="fas fa-video mr-2"></i>Live Monitoring
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let stream = null;
+    let isCameraActive = false;
+
+    // Camera controls
+    document.getElementById('startCameraBtn').addEventListener('click', startCamera);
+    document.getElementById('stopCameraBtn').addEventListener('click', stopCamera);
+    document.getElementById('capturePhotoBtn').addEventListener('click', capturePhoto);
+
+    async function startCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    width: 320, 
+                    height: 240,
+                    facingMode: 'user'
+                } 
+            });
+            
+            const video = document.getElementById('adminVideo');
+            video.srcObject = stream;
+            
+            document.getElementById('cameraStatus').textContent = 'Camera active - Ready to capture';
+            document.getElementById('cameraStatus').className = 'mt-2 text-sm text-green-600';
+            
+            document.getElementById('startCameraBtn').disabled = true;
+            document.getElementById('capturePhotoBtn').disabled = false;
+            document.getElementById('stopCameraBtn').disabled = false;
+            
+            isCameraActive = true;
+        } catch (err) {
+            console.error('Error accessing camera:', err);
+            document.getElementById('cameraStatus').textContent = 'Error accessing camera';
+            document.getElementById('cameraStatus').className = 'mt-2 text-sm text-red-600';
+        }
+    }
+
+    function stopCamera() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+            stream = null;
+        }
+        
+        const video = document.getElementById('adminVideo');
+        video.srcObject = null;
+        
+        document.getElementById('cameraStatus').textContent = 'Camera stopped';
+        document.getElementById('cameraStatus').className = 'mt-2 text-sm text-gray-600';
+        
+        document.getElementById('startCameraBtn').disabled = false;
+        document.getElementById('capturePhotoBtn').disabled = true;
+        document.getElementById('stopCameraBtn').disabled = true;
+        
+        isCameraActive = false;
+    }
+
+    function capturePhoto() {
+        if (!isCameraActive) return;
+        
+        const video = document.getElementById('adminVideo');
+        const canvas = document.getElementById('adminCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Draw current video frame to canvas
+        ctx.drawImage(video, 0, 0, 320, 240);
+        
+        // Convert canvas to base64 image data
+        const imageData = canvas.toDataURL('image/jpeg', 0.8);
+        document.getElementById('faceImageData').value = imageData;
+        
+        // Show the form
+        document.getElementById('faceUpdateForm').classList.remove('hidden');
+        
+        // Show captured image preview
+        const preview = document.createElement('div');
+        preview.className = 'mt-4 text-center';
+        preview.innerHTML = `
+            <img src="${imageData}" alt="Captured photo" class="mx-auto h-32 w-32 object-cover rounded-full border-4 border-primary">
+            <p class="mt-2 text-sm text-gray-600">Captured photo ready for upload</p>
+        `;
+        
+        // Remove existing preview
+        const existingPreview = document.querySelector('.captured-preview');
+        if (existingPreview) {
+            existingPreview.remove();
+        }
+        
+        preview.className += ' captured-preview';
+        document.getElementById('cameraContainer').appendChild(preview);
+    }
+
+    // Form submission
+    document.getElementById('faceUpdateForm').addEventListener('submit', function(e) {
+        if (!document.getElementById('faceImageData').value) {
+            e.preventDefault();
+            alert('Please capture a photo first');
+        }
+    });
+</script>
+{% endblock %}

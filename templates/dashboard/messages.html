@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Remote Work Monitor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #00aaff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #00ff88, #00aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .messages-container {
+            background: rgba(0, 40, 60, 0.2);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(15px);
+            position: relative;
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        .messages-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            animation: scan 4s infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            opacity: 0.6;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #00aaff;
+            margin-bottom: 20px;
+        }
+
+        .simple-message-form {
+            position: relative;
+            z-index: 10;
+            margin-top: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00aaff;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #00aaff;
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.4);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #00ff88, #00aaff);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 255, 0.3);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00ff88, #00aaff);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #00aaff, #00ff88);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+
+        /* Firefox */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #00aaff rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('dashboard.index') }}" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-comments"></i> Messages</h1>
+            <p>Send messages to admin and other users</p>
+        </div>
+
+        <div class="messages-container">
+            <div class="empty-state">
+                <i class="fas fa-comments"></i>
+                <h3>Message Center</h3>
+                <p>Use the form below to send messages</p>
+            </div>
+
+            <div class="simple-message-form">
+                <div class="form-group">
+                    <label for="messageType">
+                        <i class="fas fa-paper-plane"></i> Message Type
+                    </label>
+                    <select id="messageType" class="form-control">
+                        <option value="admin">Send to Admin</option>
+                        <option value="user">Send to User</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="userSelectGroup" style="display: none;">
+                    <label for="targetUser">
+                        <i class="fas fa-user"></i> Select User
+                    </label>
+                    <input type="text" id="targetUser" class="form-control" placeholder="Enter username">
+                </div>
+
+                <div class="form-group">
+                    <label for="messageSubject">
+                        <i class="fas fa-tag"></i> Subject
+                    </label>
+                    <input type="text" id="messageSubject" class="form-control" placeholder="Enter message subject">
+                </div>
+
+                <div class="form-group">
+                    <label for="messageContent">
+                        <i class="fas fa-edit"></i> Message
+                    </label>
+                    <textarea id="messageContent" class="form-control" rows="5" placeholder="Enter your message"></textarea>
+                </div>
+
+                <button class="btn btn-primary" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i> Send Message
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Show/hide user selection based on message type
+        document.getElementById('messageType').addEventListener('change', function() {
+            const userGroup = document.getElementById('userSelectGroup');
+            if (this.value === 'user') {
+                userGroup.style.display = 'block';
+            } else {
+                userGroup.style.display = 'none';
+            }
+        });
+
+        function sendMessage() {
+            const messageType = document.getElementById('messageType').value;
+            const subject = document.getElementById('messageSubject').value.trim();
+            const content = document.getElementById('messageContent').value.trim();
+            const targetUser = document.getElementById('targetUser').value.trim();
+
+            if (!subject) {
+                alert('Please enter a subject');
+                return;
+            }
+
+            if (!content) {
+                alert('Please enter a message');
+                return;
+            }
+
+            if (messageType === 'user' && !targetUser) {
+                alert('Please enter a username');
+                return;
+            }
+
+            let endpoint, data;
+
+            if (messageType === 'admin') {
+                endpoint = '/dashboard/send_admin_message';
+                data = {
+                    subject: subject,
+                    content: content
+                };
+            } else {
+                endpoint = '/dashboard/send_user_message_by_username';
+                data = {
+                    username: targetUser,
+                    subject: subject,
+                    message: content
+                };
+            }
+
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Message sent successfully!');
+                    // Clear form
+                    document.getElementById('messageSubject').value = '';
+                    document.getElementById('messageContent').value = '';
+                    document.getElementById('targetUser').value = '';
+                } else {
+                    alert('Failed to send message: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while sending the message');
+            });
+        }
+    </script>
+</body>
+</html>

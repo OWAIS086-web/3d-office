@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Remote Work Monitor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="{{ url_for('static', filename='js/futuristic-alerts.js') }}"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00ff88, #00aaff);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #00aaff, #00ff88);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+        }
+
+        /* Firefox */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: #00aaff rgba(0, 0, 0, 0.3);
+        }
+
+        /* Floating particles background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(0, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .holographic-panel {
+            background: rgba(0, 40, 60, 0.2);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 35px rgba(0, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .holographic-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+            animation: scan 4s infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #00ff88, #00aaff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #00aaff;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #00aaff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: start;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .notification-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.05), transparent);
+            animation: scan 6s infinite;
+        }
+
+        .notification-item:hover {
+            transform: translateX(5px);
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.2);
+        }
+
+        .notification-item.alert { border-left-color: #ff4444; }
+        .notification-item.warning { border-left-color: #ffaa00; }
+        .notification-item.success { border-left-color: #00ff88; }
+        .notification-item.info { border-left-color: #00aaff; }
+
+        .notification-icon {
+            font-size: 1.8rem;
+            margin-right: 20px;
+            margin-top: 5px;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-content h4 {
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+
+        .notification-content p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .notification-time {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .notification-badge {
+            background: linear-gradient(135deg, #00aaff, #0088cc);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .mark-read-btn {
+            background: linear-gradient(135deg, #00ff88, #00aaff);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .mark-read-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #ff4444, #cc3333);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 68, 68, 0.4);
+        }
+
+        /* Real-time notification indicator */
+        .live-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 15px;
+            border-radius: 25px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            z-index: 1000;
+        }
+
+        .live-dot {
+            width: 12px;
+            height: 12px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        /* New notification animation */
+        @keyframes newNotification {
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        .new-notification {
+            animation: newNotification 0.5s ease-out;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #00aaff;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+
+        .pagination a, .pagination span {
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            color: #00aaff;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background: rgba(0, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .pagination .current {
+            background: linear-gradient(135deg, #00aaff, #0088cc);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <a href="{{ url_for('dashboard.index') }}" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+    <!-- Live Indicator -->
+    <div class="live-indicator">
+        <div class="live-dot"></div>
+        <span>LIVE</span>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="holographic-panel">
+            <div class="header">
+                <h1><i class="fas fa-bell"></i> NOTIFICATION CENTER</h1>
+                <p>Stay updated with system alerts and messages</p>
+            </div>
+        </div>
+
+        <!-- Notifications List -->
+        <div class="holographic-panel">
+            <div>
+                {% for notification in notifications.items %}
+                <div class="notification-item {{ notification.type }}">
+                    <div class="notification-icon">
+                        <i class="fas fa-{% if notification.type == 'alert' %}exclamation-circle
+                            {% elif notification.type == 'warning' %}exclamation-triangle
+                            {% elif notification.type == 'success' %}check-circle
+                            {% else %}info-circle{% endif %}"></i>
+                    </div>
+                    <div class="notification-content">
+                        <h4>{{ notification.title }}</h4>
+                        <p>{{ notification.message|safe }}</p>
+                        <div class="notification-time">
+                            <i class="fas fa-clock"></i>
+                            {{ notification.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 10px;">
+                            {% if not notification.is_read %}
+                            <button onclick="markAsRead({{ notification.id }})" class="mark-read-btn">
+                                <i class="fas fa-check"></i> Mark as Read
+                            </button>
+                            {% endif %}
+                            <button onclick="deleteNotification({{ notification.id }})" class="delete-btn">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                    {% if not notification.is_read %}
+                    <div class="notification-badge">NEW</div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-bell-slash"></i>
+                    <h3>No notifications yet</h3>
+                    <p>You'll see system alerts and messages here</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if notifications.pages > 1 %}
+            <div class="pagination">
+                {% if notifications.has_prev %}
+                <a href="{{ url_for('dashboard.notifications', page=notifications.prev_num) }}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                {% endif %}
+                
+                {% for page_num in notifications.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != notifications.page %}
+                        <a href="{{ url_for('dashboard.notifications', page=page_num) }}">
+                            {{ page_num }}
+                        </a>
+                        {% else %}
+                        <span class="current">{{ page_num }}</span>
+                        {% endif %}
+                    {% else %}
+                    <span>...</span>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if notifications.has_next %}
+                <a href="{{ url_for('dashboard.notifications', page=notifications.next_num) }}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 40;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        function markAsRead(notificationId) {
+            fetch(`/dashboard/mark_notification_read/${notificationId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the notification element smoothly
+                    const notificationElement = document.querySelector(`[data-notification-id="${notificationId}"]`);
+                    if (notificationElement) {
+                        notificationElement.style.animation = 'slideOut 0.3s ease-in';
+                        setTimeout(() => {
+                            location.reload();
+                        }, 300);
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    FAlert.error('Failed to mark notification as read');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                FAlert.error('An error occurred while marking notification as read');
+            });
+        }
+
+        function deleteNotification(notificationId) {
+            FAlert.confirm(
+                'Are you sure you want to delete this notification? This action cannot be undone.',
+                'Delete Notification',
+                function() {
+                    // User confirmed deletion
+                    fetch(`/dashboard/delete_notification/${notificationId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Remove the notification element smoothly
+                            const notificationElement = document.querySelector(`[data-notification-id="${notificationId}"]`);
+                            if (notificationElement) {
+                                notificationElement.style.animation = 'slideOut 0.3s ease-in';
+                                setTimeout(() => {
+                                    notificationElement.remove();
+                                    checkEmptyState();
+                                }, 300);
+                            }
+                            FAlert.success('Notification deleted successfully');
+                        } else {
+                            FAlert.error('Failed to delete notification: ' + (data.message || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        FAlert.error('An error occurred while deleting the notification');
+                    });
+                },
+                function() {
+                    // User cancelled - do nothing
+                }
+            );
+        }
+
+        function checkEmptyState() {
+            const notificationItems = document.querySelectorAll('.notification-item');
+            if (notificationItems.length === 0) {
+                const container = document.querySelector('.holographic-panel > div');
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bell-slash"></i>
+                        <h3>No notifications yet</h3>
+                        <p>You'll see system alerts and messages here</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Real-time notification polling
+        let notificationPollingInterval;
+        let lastNotificationCount = {{ notifications.items|length }};
+
+        function startNotificationPolling() {
+            notificationPollingInterval = setInterval(() => {
+                fetch('/dashboard/api/notifications-count')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.count > lastNotificationCount) {
+                            // New notification received, reload page
+                            FAlert.info('You have received a new notification', 'New Notification');
+                            setTimeout(() => {
+                                location.reload();
+                            }, 2000);
+                        }
+                        lastNotificationCount = data.count;
+                    })
+                    .catch(error => {
+                        console.log('Notification polling error:', error);
+                    });
+            }, 5000); // Poll every 5 seconds
+        }
+
+        function showNotification(title, message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 80px; right: 20px; z-index: 10000;
+                background: rgba(0, 0, 0, 0.9); border: 2px solid;
+                border-radius: 10px; padding: 15px 20px; color: white;
+                min-width: 300px; animation: slideIn 0.3s ease-out;
+            `;
+            
+            if (type === 'success') {
+                notification.style.borderColor = '#00ff88';
+            } else if (type === 'error') {
+                notification.style.borderColor = '#ff4444';
+            } else {
+                notification.style.borderColor = '#00aaff';
+            }
+            
+            notification.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 5px;">${title}</div>
+                <div style="font-size: 0.9rem; opacity: 0.9;">${message}</div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            startNotificationPolling();
+            
+            // Add data attributes to notification items for easier targeting
+            const notificationItems = document.querySelectorAll('.notification-item');
+            notificationItems.forEach((item, index) => {
+                const button = item.querySelector('.mark-read-btn, .delete-btn');
+                if (button) {
+                    const onclick = button.getAttribute('onclick');
+                    const match = onclick.match(/\d+/);
+                    if (match) {
+                        item.setAttribute('data-notification-id', match[0]);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

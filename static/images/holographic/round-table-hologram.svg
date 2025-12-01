@@ -1,0 +1,66 @@
+<svg width="150" height="120" viewBox="0 0 150 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="tableGradient" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#8B4513;stop-opacity:0.8" />
+      <stop offset="50%" style="stop-color:#A0522D;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#CD853F;stop-opacity:0.4" />
+    </radialGradient>
+    <filter id="tableGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Table Surface (3D perspective) -->
+  <ellipse cx="75" cy="60" rx="60" ry="25" fill="url(#tableGradient)" stroke="#00aaff" stroke-width="3" filter="url(#tableGlow)"/>
+  
+  <!-- Table Edge (3D effect) -->
+  <ellipse cx="75" cy="65" rx="60" ry="25" fill="none" stroke="#00aaff" stroke-width="2" opacity="0.6"/>
+  
+  <!-- Table Leg (center) -->
+  <ellipse cx="75" cy="85" rx="8" ry="4" fill="url(#tableGradient)" stroke="#00aaff" stroke-width="2" opacity="0.8"/>
+  <rect x="71" y="85" width="8" height="15" fill="url(#tableGradient)" stroke="#00aaff" stroke-width="1" opacity="0.8"/>
+  <ellipse cx="75" cy="100" rx="12" ry="6" fill="url(#tableGradient)" stroke="#00aaff" stroke-width="2" opacity="0.8"/>
+  
+  <!-- Holographic Grid Pattern -->
+  <circle cx="75" cy="60" r="20" fill="none" stroke="#00aaff" stroke-width="1" opacity="0.3">
+    <animate attributeName="r" values="20;25;20" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0.6;0.3" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="75" cy="60" r="35" fill="none" stroke="#00aaff" stroke-width="1" opacity="0.3">
+    <animate attributeName="r" values="35;40;35" dur="5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0.6;0.3" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="75" cy="60" r="50" fill="none" stroke="#00aaff" stroke-width="1" opacity="0.3">
+    <animate attributeName="r" values="50;55;50" dur="6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.3;0.6;0.3" dur="6s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Radial Lines -->
+  <line x1="75" y1="35" x2="75" y2="85" stroke="#00aaff" stroke-width="1" opacity="0.4"/>
+  <line x1="45" y1="50" x2="105" y2="70" stroke="#00aaff" stroke-width="1" opacity="0.4"/>
+  <line x1="45" y1="70" x2="105" y2="50" stroke="#00aaff" stroke-width="1" opacity="0.4"/>
+  <line x1="25" y1="60" x2="125" y2="60" stroke="#00aaff" stroke-width="1" opacity="0.4"/>
+  
+  <!-- Holographic Particles -->
+  <circle cx="50" cy="45" r="1.5" fill="#00aaff" opacity="0.7">
+    <animate attributeName="cy" values="45;35;45" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0.3;0.7" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="100" cy="45" r="1.5" fill="#00aaff" opacity="0.7">
+    <animate attributeName="cy" values="45;35;45" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0.3;0.7" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="75" cy="40" r="1.5" fill="#00aaff" opacity="0.7">
+    <animate attributeName="cy" values="40;30;40" dur="3.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0.3;0.7" dur="3.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Table Surface Glow -->
+  <ellipse cx="75" cy="60" rx="60" ry="25" fill="none" stroke="#00aaff" stroke-width="1" opacity="0.2">
+    <animate attributeName="opacity" values="0.2;0.5;0.2" dur="3s" repeatCount="indefinite"/>
+  </ellipse>
+</svg>

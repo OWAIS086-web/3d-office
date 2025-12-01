@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+
+{% block title %}My Tasks{% endblock %}
+
+{% block styles %}
+<style>
+    .task-column {
+        min-height: 300px;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    
+    .task-card {
+        cursor: grab;
+    }
+    
+    .task-card:active {
+        cursor: grabbing;
+    }
+    
+    .task-card.dragging {
+        opacity: 0.5;
+    }
+    
+    .priority-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 6px;
+    }
+    
+    .priority-low { background-color: #10B981; }
+    .priority-medium { background-color: #F59E0B; }
+    .priority-high { background-color: #EF4444; }
+    .priority-urgent { background-color: #7F1D1D; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="space-y-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">My Tasks</h1>
+                <p class="text-gray-600">View and manage your assigned tasks</p>
+            </div>
+        </div>
+
+        <!-- Task Board -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- To Do Column -->
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-3 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                        <span class="w-3 h-3 bg-gray-400 rounded-full mr-2"></span>
+                        To Do
+                        <span class="ml-2 text-sm text-gray-500">{{ tasks_by_status.todo|length }}</span>
+                    </h3>
+                </div>
+                <div class="column-drop-zone" data-status="todo">
+                    <div class="space-y-3 p-4 task-column">
+                        {% for task in tasks_by_status.todo %}
+                        <div class="task-card bg-white border border-gray-200 rounded-md shadow-sm p-4" 
+                             draggable="true" 
+                             data-task-id="{{ task.id }}" 
+                             data-current-status="todo">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-sm font-medium text-gray-900 flex items-center">
+                                    <span class="priority-indicator priority-{{ task.priority }}"></span>
+                                    {{ task.title }}
+                                </h4>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-600 line-clamp-2">{{ task.description }}</p>
+                            <div class="mt-3 flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <span class="text-xs text-gray-500">
+                                        {% for user in users %}
+                                            {% if user.id == task.assigned_by_id %}
+                                                <i class="fas fa-user-shield mr-1"></i>{{ user.username }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                                <div>
+                                    {% if task.due_date %}
+                                    <span class="text-xs text-gray-500">
+                                        <i class="far fa-calendar mr-1"></i>{{ task.due_date.strftime('%Y-%m-%d') }}
+                                        {% if task.due_time %}
+                                        <i class="far fa-clock ml-1 mr-1"></i>{{ task.due_time.strftime('%H:%M') }}
+                                        {% endif %}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button onclick="updateTaskStatus({{ task.id }}, 'in_progress')" class="w-full py-2 px-3 text-xs font-medium text-center text-white bg-blue-600 rounded-md hover:bg-blue-700">
+                                    Start Working
+                                </button>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-tasks text-2xl mb-2"></i>
+                            <p>No tasks in this column</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- In Progress Column -->
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-3 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                        <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                        In Progress
+                        <span class="ml-2 text-sm text-gray-500">{{ tasks_by_status.in_progress|length }}</span>
+                    </h3>
+                </div>
+                <div class="column-drop-zone" data-status="in_progress">
+                    <div class="space-y-3 p-4 task-column">
+                        {% for task in tasks_by_status.in_progress %}
+                        <div class="task-card bg-white border border-gray-200 rounded-md shadow-sm p-4" 
+                             draggable="true" 
+                             data-task-id="{{ task.id }}" 
+                             data-current-status="in_progress">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-sm font-medium text-gray-900 flex items-center">
+                                    <span class="priority-indicator priority-{{ task.priority }}"></span>
+                                    {{ task.title }}
+                                </h4>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-600 line-clamp-2">{{ task.description }}</p>
+                            <div class="mt-3 flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <span class="text-xs text-gray-500">
+                                        {% for user in users %}
+                                            {% if user.id == task.assigned_by_id %}
+                                                <i class="fas fa-user-shield mr-1"></i>{{ user.username }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                                <div>
+                                    {% if task.due_date %}
+                                    <span class="text-xs text-gray-500">
+                                        <i class="far fa-calendar mr-1"></i>{{ task.due_date.strftime('%Y-%m-%d') }}
+                                        {% if task.due_time %}
+                                        <i class="far fa-clock ml-1 mr-1"></i>{{ task.due_time.strftime('%H:%M') }}
+                                        {% endif %}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button onclick="updateTaskStatus({{ task.id }}, 'completed')" class="w-full py-2 px-3 text-xs font-medium text-center text-white bg-green-600 rounded-md hover:bg-green-700">
+                                    Mark as Completed
+                                </button>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-tasks text-2xl mb-2"></i>
+                            <p>No tasks in this column</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed Column -->
+            <div class="bg-white shadow rounded-lg">
+                <div class="px-4 py-3 border-b border-gray-200">
+                    <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                        <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                        Completed
+                        <span class="ml-2 text-sm text-gray-500">{{ tasks_by_status.completed|length }}</span>
+                    </h3>
+                </div>
+                <div class="column-drop-zone" data-status="completed">
+                    <div class="space-y-3 p-4 task-column">
+                        {% for task in tasks_by_status.completed %}
+                        <div class="task-card bg-white border border-gray-200 rounded-md shadow-sm p-4" 
+                             data-task-id="{{ task.id }}" 
+                             data-current-status="completed">
+                            <div class="flex justify-between items-start">
+                                <h4 class="text-sm font-medium text-gray-900 flex items-center">
+                                    <span class="priority-indicator priority-{{ task.priority }}"></span>
+                                    {{ task.title }}
+                                </h4>
+                            </div>
+                            <p class="mt-1 text-sm text-gray-600 line-clamp-2">{{ task.description }}</p>
+                            <div class="mt-3 flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <span class="text-xs text-gray-500">
+                                        {% for user in users %}
+                                            {% if user.id == task.assigned_by_id %}
+                                                <i class="fas fa-user-shield mr-1"></i>{{ user.username }}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                                <div>
+                                    {% if task.completed_at %}
+                                    <span class="text-xs text-gray-500">
+                                        <i class="fas fa-check-circle mr-1"></i>{{ task.completed_at.strftime('%Y-%m-%d') }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-tasks text-2xl mb-2"></i>
+                            <p>No tasks in this column</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Make sure showNotification exists
+    if (typeof showNotification !== 'function') {
+        window.showNotification = function(title, message, type) {
+            alert(title + ': ' + message);
+        }
+    }
+
+    function updateTaskStatus(taskId, newStatus) {
+        fetch(`/dashboard/tasks/${taskId}/update-status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                showNotification('Error', data.message || 'Failed to update task status', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error', 'Failed to update task status', 'error');
+        });
+    }
+
+    window.updateTaskStatus = updateTaskStatus; // Expose globally
+
+    function initSocketIO() {
+        if (typeof socket === 'undefined') return;
+        
+        socket.on('task_assigned', function(data) {
+            showNotification('New Task', 'You have been assigned a new task: ' + data.title, 'info');
+            setTimeout(() => { window.location.reload(); }, 3000);
+        });
+        
+        socket.on('task_updated', function(data) {
+            showNotification('Task Updated', 'Task "' + data.title + '" has been updated', 'info');
+            setTimeout(() => { window.location.reload(); }, 3000);
+        });
+    }
+
+    initSocketIO();
+});
+</script>
+{% endblock %}

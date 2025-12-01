@@ -1,0 +1,2118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Layout - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Floating particles background */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(0, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-10vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 15px 30px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #ffd700;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Main Container */
+        .office-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            padding-top: 80px;
+            overflow: hidden;
+        }
+
+        /* Department Selector */
+        .department-selector {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 900;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .dept-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 3px solid;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dept-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s;
+        }
+
+        .dept-btn:hover::before {
+            transform: translateX(100%);
+        }
+
+        .dept-btn.engineering {
+            border-color: #00aaff;
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.3);
+        }
+
+        .dept-btn.engineering:hover {
+            box-shadow: 0 0 30px rgba(0, 170, 255, 0.6);
+            transform: scale(1.1);
+        }
+
+        .dept-btn.marketing {
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .dept-btn.marketing:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.6);
+            transform: scale(1.1);
+        }
+
+        .dept-btn.sales {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .dept-btn.sales:hover {
+            box-shadow: 0 0 30px rgba(255, 107, 107, 0.6);
+            transform: scale(1.1);
+        }
+
+        .dept-btn.hr {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .dept-btn.hr:hover {
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            transform: scale(1.1);
+        }
+
+        .dept-btn.general {
+            border-color: #9b59b6;
+            box-shadow: 0 0 20px rgba(155, 89, 182, 0.3);
+        }
+
+        .dept-btn.general:hover {
+            box-shadow: 0 0 30px rgba(155, 89, 182, 0.6);
+            transform: scale(1.1);
+        }
+
+        .dept-btn i {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .dept-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Office Layout Area */
+        .office-layout {
+            position: absolute;
+            top: 100px;
+            left: 200px;
+            right: 50px;
+            bottom: 50px;
+            perspective: 1000px;
+        }
+
+        /* Comprehensive Office Layout */
+        .comprehensive-office {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.1), rgba(0, 40, 60, 0.1));
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .department-section {
+            position: absolute;
+            width: 300px;
+            height: 250px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid;
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .department-section:hover {
+            transform: scale(1.05) translateZ(20px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .department-header {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .department-content {
+            padding: 20px;
+            height: calc(100% - 70px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Department View */
+        .department-view {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: rotateY(90deg);
+            transition: all 0.6s ease;
+            pointer-events: none;
+        }
+
+        .department-view.active {
+            opacity: 1;
+            transform: rotateY(0deg);
+            pointer-events: all;
+        }
+
+        /* Table Arrangements */
+        .table-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Single User - Round Table */
+        .round-table {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        /* Single User - Round Table */
+        .round-table.single-user {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        /* Multi User - Round Table */
+        .round-table.multi-user {
+            border: 3px solid;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .round-seat {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .round-seat.occupied {
+            background: rgba(0, 255, 136, 0.2);
+            border: 2px solid rgba(0, 255, 136, 0.5);
+        }
+
+        .round-seat.break {
+            background: rgba(255, 170, 0, 0.2);
+            border: 2px solid rgba(255, 170, 0, 0.5);
+        }
+
+        .round-seat.offline {
+            background: rgba(255, 68, 68, 0.2);
+            border: 2px solid rgba(255, 68, 68, 0.5);
+        }
+
+        /* Multiple Users - Square Tables */
+        .square-table {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 3px solid;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        /* Department Building */
+        .department-building {
+            position: absolute;
+            width: 300px;
+            height: 350px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .building-structure {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8));
+            border: 3px solid;
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            overflow: hidden;
+        }
+
+        .building-floors {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .floor {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .floor::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    rgba(255, 255, 255, 0.1) 20%,
+                    transparent 40%,
+                    rgba(255, 255, 255, 0.1) 60%,
+                    transparent 80%,
+                    rgba(255, 255, 255, 0.1) 100%);
+            animation: building-lights 3s infinite;
+        }
+
+        @keyframes building-lights {
+            0% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+
+            100% {
+                opacity: 0.3;
+            }
+        }
+
+        .building-label {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .building-label i {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .building-label span {
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .user-count {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .table-seat {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .table-seat.occupied {
+            background: rgba(0, 255, 136, 0.2);
+            border: 2px solid rgba(0, 255, 136, 0.5);
+        }
+
+        .table-seat.break {
+            background: rgba(255, 170, 0, 0.2);
+            border: 2px solid rgba(255, 170, 0, 0.5);
+        }
+
+        .table-seat.offline {
+            background: rgba(255, 68, 68, 0.2);
+            border: 2px solid rgba(255, 68, 68, 0.5);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00ff88, #00aaff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .user-name {
+            font-size: 0.7rem;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        .user-status {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid #000;
+        }
+
+        .user-status.online {
+            background: #00ff88;
+        }
+
+        .user-status.break {
+            background: #ffaa00;
+        }
+
+        .user-status.offline {
+            background: #ff4444;
+        }
+
+        /* Hover Effects */
+        .round-table:hover,
+        .square-table:hover,
+        .department-building:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .department-building:hover .building-structure {
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .interior-round-table:hover,
+        .interior-square-table:hover {
+            transform: scale(1.1);
+        }
+
+        /* Department Colors */
+        .engineering .round-table,
+        .engineering .square-table {
+            border-color: #00aaff;
+            box-shadow: 0 0 20px rgba(0, 170, 255, 0.3);
+        }
+
+        .marketing .round-table,
+        .marketing .square-table {
+            border-color: #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+
+        .sales .round-table,
+        .sales .square-table {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .hr .round-table,
+        .hr .square-table {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .general .round-table,
+        .general .square-table {
+            border-color: #9b59b6;
+            box-shadow: 0 0 20px rgba(155, 89, 182, 0.3);
+        }
+
+        /* User Details Modal */
+        .user-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(0, 40, 60, 0.9);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            backdrop-filter: blur(15px);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            color: #ffd700;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #ffd700;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .detail-value {
+            color: #ffffff;
+        }
+
+        /* Building Modal */
+        .building-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .building-modal-content {
+            background: rgba(0, 40, 60, 0.95);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 90vw;
+            max-height: 90vh;
+            width: 800px;
+            height: 600px;
+            backdrop-filter: blur(15px);
+            overflow: hidden;
+        }
+
+        .building-interior {
+            width: 100%;
+            height: calc(100% - 60px);
+            position: relative;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 40, 60, 0.3));
+            border-radius: 10px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .interior-table {
+            position: relative;
+            margin: 20px;
+            display: inline-block;
+        }
+
+        .interior-round-table {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px solid;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .interior-square-table {
+            width: 160px;
+            height: 160px;
+            border: 2px solid;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .interior-seat {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .interior-seat.occupied {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid rgba(0, 255, 136, 0.5);
+        }
+
+        .interior-seat.break {
+            background: rgba(255, 170, 0, 0.2);
+            border: 1px solid rgba(255, 170, 0, 0.5);
+        }
+
+        .interior-seat.offline {
+            background: rgba(255, 68, 68, 0.2);
+            border: 1px solid rgba(255, 68, 68, 0.5);
+        }
+
+        .interior-user-avatar {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00ff88, #00aaff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.7rem;
+            margin-bottom: 3px;
+        }
+
+        .interior-user-name {
+            font-size: 0.6rem;
+            text-align: center;
+            opacity: 0.9;
+        }
+
+        /* 3D Holographic Office Elements */
+        .workstation-3d {
+            position: relative;
+            width: 150px;
+            height: 120px;
+            transform-style: preserve-3d;
+            perspective: 500px;
+        }
+
+        /* Holographic Desk */
+        .holographic-desk {
+            position: absolute;
+            width: 100px;
+            height: 60px;
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.8), rgba(160, 82, 45, 0.6));
+            border: 2px solid rgba(139, 69, 19, 1);
+            border-radius: 10px;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) rotateX(75deg);
+            box-shadow:
+                0 0 20px rgba(139, 69, 19, 0.5),
+                inset 0 0 10px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Holographic Chair */
+        .holographic-chair {
+            position: absolute;
+            width: 30px;
+            height: 35px;
+            background: linear-gradient(135deg, rgba(44, 44, 44, 0.8), rgba(64, 64, 64, 0.6));
+            border: 2px solid rgba(64, 64, 64, 1);
+            border-radius: 8px;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%) rotateX(15deg);
+            box-shadow: 0 0 15px rgba(64, 64, 64, 0.5);
+        }
+
+        /* Holographic Avatar */
+        .holographic-avatar {
+            position: absolute;
+            width: 35px;
+            height: 50px;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+        }
+
+        .holographic-head {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 228, 181, 0.9), rgba(222, 184, 135, 0.7));
+            border: 2px solid rgba(255, 228, 181, 1);
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 0 15px rgba(255, 228, 181, 0.6);
+            position: relative;
+        }
+
+        .holographic-head::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: holographic-pulse 2s infinite;
+        }
+
+        .holographic-body {
+            width: 30px;
+            height: 20px;
+            background: linear-gradient(135deg, rgba(65, 105, 225, 0.8), rgba(100, 149, 237, 0.6));
+            border: 2px solid rgba(65, 105, 225, 1);
+            border-radius: 8px;
+            margin: 0 auto;
+            box-shadow: 0 0 15px rgba(65, 105, 225, 0.5);
+        }
+
+        /* Holographic Computer */
+        .holographic-computer {
+            position: absolute;
+            width: 20px;
+            height: 15px;
+            background: linear-gradient(135deg, rgba(44, 44, 44, 0.8), rgba(64, 64, 64, 0.6));
+            border: 2px solid rgba(64, 64, 64, 1);
+            border-radius: 3px;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(64, 64, 64, 0.5);
+        }
+
+        .holographic-computer::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 12px;
+            background: linear-gradient(135deg, rgba(0, 0, 128, 0.8), rgba(65, 105, 225, 0.6));
+            border: 1px solid rgba(65, 105, 225, 1);
+            border-radius: 2px;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(65, 105, 225, 0.7);
+        }
+
+        @keyframes holographic-pulse {
+            0% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.8;
+                transform: scale(1.05);
+            }
+
+            100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+        }
+
+        .avatar-head-3d {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFE4B5, #DEB887);
+            margin: 0 auto 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .avatar-body-3d {
+            width: 25px;
+            height: 15px;
+            background: linear-gradient(135deg, #4169E1, #6495ED);
+            border-radius: 5px;
+            margin: 0 auto;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .computer-3d {
+            position: absolute;
+            width: 15px;
+            height: 12px;
+            background: linear-gradient(135deg, #2C2C2C, #404040);
+            border-radius: 2px;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .computer-3d::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 8px;
+            background: linear-gradient(135deg, #000080, #4169E1);
+            border-radius: 1px;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 5px rgba(65, 105, 225, 0.5);
+        }
+
+        /* Holographic Round Table */
+        .round-table-3d {
+            position: relative;
+            width: 180px;
+            height: 150px;
+            transform-style: preserve-3d;
+            perspective: 500px;
+        }
+
+        .holographic-round-surface {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(139, 69, 19, 0.8), rgba(160, 82, 45, 0.6));
+            border: 3px solid rgba(139, 69, 19, 1);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(75deg);
+            box-shadow:
+                0 0 25px rgba(139, 69, 19, 0.6),
+                inset 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .holographic-round-surface::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            animation: holographic-pulse 3s infinite;
+        }
+
+        .round-avatar-3d {
+            position: absolute;
+            width: 30px;
+            height: 40px;
+        }
+
+        /* Holographic Square Table */
+        .square-table-3d {
+            position: relative;
+            width: 180px;
+            height: 150px;
+            transform-style: preserve-3d;
+            perspective: 500px;
+        }
+
+        .holographic-square-surface {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.8), rgba(160, 82, 45, 0.6));
+            border: 3px solid rgba(139, 69, 19, 1);
+            border-radius: 15px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(75deg);
+            box-shadow:
+                0 0 25px rgba(139, 69, 19, 0.6),
+                inset 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .holographic-square-surface::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            animation: holographic-pulse 3s infinite;
+        }
+
+        /* Holographic Department Building */
+        .department-office-3d {
+            position: relative;
+            width: 200px;
+            height: 180px;
+            transform-style: preserve-3d;
+            perspective: 800px;
+        }
+
+        .holographic-building {
+            position: absolute;
+            width: 140px;
+            height: 120px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(15deg) rotateY(5deg);
+            transform-style: preserve-3d;
+        }
+
+        /* Building Base */
+        .building-base {
+            position: absolute;
+            width: 140px;
+            height: 20px;
+            background: linear-gradient(135deg, rgba(0, 150, 255, 0.8), rgba(0, 100, 200, 0.6));
+            border: 2px solid rgba(0, 150, 255, 1);
+            border-radius: 10px;
+            bottom: 0;
+            box-shadow:
+                0 0 30px rgba(0, 150, 255, 0.8),
+                inset 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Building Structure */
+        .building-structure-3d {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            left: 50%;
+            bottom: 20px;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg,
+                    rgba(0, 150, 255, 0.3),
+                    rgba(0, 100, 200, 0.2),
+                    rgba(0, 150, 255, 0.4));
+            border: 2px solid rgba(0, 150, 255, 0.8);
+            border-radius: 8px;
+            box-shadow:
+                0 0 25px rgba(0, 150, 255, 0.6),
+                inset 0 0 15px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        /* Building Floors */
+        .holographic-floors {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .holographic-floor {
+            flex: 1;
+            background: rgba(0, 150, 255, 0.2);
+            border: 1px solid rgba(0, 150, 255, 0.5);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .holographic-floor::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg,
+                    transparent 0%,
+                    rgba(0, 255, 255, 0.6) 20%,
+                    transparent 40%,
+                    rgba(0, 255, 255, 0.6) 60%,
+                    transparent 80%,
+                    rgba(0, 255, 255, 0.6) 100%);
+            animation: holographic-scan 3s infinite;
+        }
+
+        .holographic-floor::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: radial-gradient(circle,
+                    rgba(0, 255, 255, 0.3) 0%,
+                    transparent 70%);
+            border-radius: 2px;
+            animation: holographic-glow 2s infinite alternate;
+        }
+
+        @keyframes holographic-scan {
+            0% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes holographic-glow {
+            0% {
+                opacity: 0.3;
+            }
+
+            100% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Building Top */
+        .building-top {
+            position: absolute;
+            width: 80px;
+            height: 15px;
+            left: 50%;
+            top: -15px;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.8), rgba(0, 200, 255, 0.6));
+            border: 2px solid rgba(0, 255, 255, 1);
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+        }
+
+        /* Status indicators for holographic avatars */
+        .holographic-avatar.online .holographic-head {
+            box-shadow: 0 0 20px #00ff88, 0 0 40px rgba(0, 255, 136, 0.5);
+            border-color: #00ff88;
+        }
+
+        .holographic-avatar.online .holographic-body {
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+            border-color: rgba(0, 255, 136, 0.5);
+        }
+
+        .holographic-avatar.break .holographic-head {
+            box-shadow: 0 0 20px #ffaa00, 0 0 40px rgba(255, 170, 0, 0.5);
+            border-color: #ffaa00;
+        }
+
+        .holographic-avatar.break .holographic-body {
+            box-shadow: 0 0 15px rgba(255, 170, 0, 0.3);
+            border-color: rgba(255, 170, 0, 0.5);
+        }
+
+        .holographic-avatar.offline .holographic-head {
+            box-shadow: 0 0 20px #ff4444, 0 0 40px rgba(255, 68, 68, 0.5);
+            border-color: #ff4444;
+            opacity: 0.6;
+        }
+
+        .holographic-avatar.offline .holographic-body {
+            box-shadow: 0 0 15px rgba(255, 68, 68, 0.3);
+            border-color: rgba(255, 68, 68, 0.5);
+            opacity: 0.6;
+        }
+
+        /* Loading Animation */
+        .loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1500;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-top: 3px solid #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .department-selector {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                flex-direction: row;
+                gap: 10px;
+            }
+
+            .dept-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 0.7rem;
+            }
+
+            .dept-btn i {
+                font-size: 1.2rem;
+                margin-bottom: 2px;
+            }
+
+            .office-layout {
+                left: 20px;
+                top: 120px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1><i class="fas fa-building"></i> Office Layout Dashboard</h1>
+        <a href="{{ url_for('admin.dashboard') }}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Admin
+        </a>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Department Selector -->
+    <div class="department-selector">
+        <button class="dept-btn engineering" onclick="showDepartment('ENGINEERING')" data-dept="ENGINEERING">
+            <i class="fas fa-cogs"></i>
+            <span>Engineering</span>
+            <div class="dept-count" id="count-ENGINEERING">0</div>
+        </button>
+        <button class="dept-btn marketing" onclick="showDepartment('MARKETING')" data-dept="MARKETING">
+            <i class="fas fa-bullhorn"></i>
+            <span>Marketing</span>
+            <div class="dept-count" id="count-MARKETING">0</div>
+        </button>
+        <button class="dept-btn sales" onclick="showDepartment('SALES')" data-dept="SALES">
+            <i class="fas fa-chart-line"></i>
+            <span>Sales</span>
+            <div class="dept-count" id="count-SALES">0</div>
+        </button>
+        <button class="dept-btn hr" onclick="showDepartment('HR')" data-dept="HR">
+            <i class="fas fa-users"></i>
+            <span>HR</span>
+            <div class="dept-count" id="count-HR">0</div>
+        </button>
+        <button class="dept-btn general" onclick="showDepartment('GENERAL')" data-dept="GENERAL">
+            <i class="fas fa-user-tie"></i>
+            <span>General</span>
+            <div class="dept-count" id="count-GENERAL">0</div>
+        </button>
+    </div>
+
+    <!-- Office Layout Area -->
+    <div class="office-layout">
+        <!-- Department views will be dynamically generated here -->
+    </div>
+
+    <!-- User Details Modal -->
+    <div class="user-modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">User Details</h2>
+                <button class="close-btn" onclick="closeUserModal()">&times;</button>
+            </div>
+            <div class="user-details" id="userDetails">
+                <!-- User details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Building Details Modal -->
+    <div class="building-modal" id="buildingModal">
+        <div class="building-modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="buildingModalTitle">Department Building</h2>
+                <button class="close-btn" onclick="closeBuildingModal()">&times;</button>
+            </div>
+            <div class="building-interior" id="buildingInterior">
+                <!-- Building interior with tables will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentDepartment = 'ENGINEERING';
+        let departmentData = {};
+        let allUsers = [];
+
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 50;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Load users data
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/users/all');
+                const data = await response.json();
+
+                if (data.success) {
+                    allUsers = data.users;
+                    organizeDepartments();
+                    updateDepartmentCounts();
+                    generateComprehensiveOfficeLayout();
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        // Organize users by department
+        function organizeDepartments() {
+            departmentData = {};
+
+            allUsers.forEach(user => {
+                const dept = user.department || 'GENERAL';
+                if (!departmentData[dept]) {
+                    departmentData[dept] = [];
+                }
+                departmentData[dept].push(user);
+            });
+        }
+
+        // Update department counts
+        function updateDepartmentCounts() {
+            Object.keys(departmentData).forEach(dept => {
+                const countEl = document.getElementById(`count-${dept}`);
+                if (countEl) {
+                    countEl.textContent = departmentData[dept].length;
+                }
+            });
+        }
+
+        // Show department layout
+        function showDepartment(department) {
+            currentDepartment = department;
+
+            // Update active button
+            document.querySelectorAll('.dept-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-dept="${department}"]`).classList.add('active');
+
+            // Generate comprehensive office layout
+            generateComprehensiveOfficeLayout();
+        }
+
+        // Generate comprehensive office layout showing all departments
+        function generateComprehensiveOfficeLayout() {
+            const officeLayout = document.querySelector('.office-layout');
+
+            // Clear existing layout
+            officeLayout.innerHTML = '';
+
+            // Create main office container
+            const officeContainer = document.createElement('div');
+            officeContainer.className = 'comprehensive-office';
+
+            // Create department sections
+            const departments = ['ENGINEERING', 'MARKETING', 'SALES', 'HR', 'GENERAL'];
+            const departmentColors = {
+                'ENGINEERING': '#00aaff',
+                'MARKETING': '#00ff88',
+                'SALES': '#ff6b6b',
+                'HR': '#ffd700',
+                'GENERAL': '#9b59b6'
+            };
+
+            departments.forEach((dept, index) => {
+                const users = departmentData[dept] || [];
+                if (users.length > 0) {
+                    const deptSection = createDepartmentSection(dept, users, departmentColors[dept], index);
+                    officeContainer.appendChild(deptSection);
+                }
+            });
+
+            officeLayout.appendChild(officeContainer);
+        }
+
+        // Create department section
+        function createDepartmentSection(department, users, color, index) {
+            const section = document.createElement('div');
+            section.className = 'department-section';
+            section.style.borderColor = color;
+            section.style.boxShadow = `0 0 20px ${color}40`;
+
+            // Position departments in a grid
+            const positions = [
+                { x: '10%', y: '10%' },   // Engineering - top left
+                { x: '60%', y: '10%' },   // Marketing - top right  
+                { x: '10%', y: '60%' },   // Sales - bottom left
+                { x: '60%', y: '60%' },   // HR - bottom right
+                { x: '35%', y: '35%' }    // General - center
+            ];
+
+            if (positions[index]) {
+                section.style.left = positions[index].x;
+                section.style.top = positions[index].y;
+            }
+
+            // Department header
+            const header = document.createElement('div');
+            header.className = 'department-header';
+            header.innerHTML = `
+                <h3 style="color: ${color}; margin: 0; font-size: 1rem; text-shadow: 0 0 10px ${color};">
+                    ${department}
+                </h3>
+                <span style="font-size: 0.8rem; opacity: 0.8;">${users.length} Users</span>
+            `;
+            section.appendChild(header);
+
+            // Department content
+            const content = document.createElement('div');
+            content.className = 'department-content';
+
+            // Create 3D office elements based on user count
+            const officeElement = create3DOfficeElement(users, department, color);
+            content.appendChild(officeElement);
+
+            section.appendChild(content);
+
+            // Click handler
+            section.onclick = () => focusDepartment(department, users, color);
+
+            return section;
+        }
+
+        // Create 3D office element with avatars
+        function create3DOfficeElement(users, department, color) {
+            const userCount = users.length;
+
+            if (userCount === 1) {
+                return createSingle3DWorkstation(users[0], color);
+            } else if (userCount <= 3) {
+                return createRound3DTable(users, color);
+            } else if (userCount === 4) {
+                return createSquare3DTable(users, color);
+            } else {
+                return create3DDepartmentOffice(users, department, color);
+            }
+        }
+
+        // Calculate layout based on user count
+        function calculateDepartmentLayout(users) {
+            const userCount = users.length;
+
+            if (userCount === 0) {
+                return { type: 'empty' };
+            } else if (userCount === 1) {
+                return { type: 'single', users: users };
+            } else if (userCount <= 3) {
+                return { type: 'round', users: users };
+            } else if (userCount === 4) {
+                return { type: 'square', users: users };
+            } else {
+                return { type: 'building', users: users };
+            }
+        }
+
+        // Create department element based on layout type
+        function createDepartmentElement(layout, department) {
+            const container = document.createElement('div');
+            container.style.position = 'absolute';
+            container.style.left = '50%';
+            container.style.top = '50%';
+            container.style.transform = 'translate(-50%, -50%)';
+
+            switch (layout.type) {
+                case 'single':
+                    return createSingleUserTable(layout.users[0], department);
+
+                case 'round':
+                    return createRoundTable(layout.users, department);
+
+                case 'square':
+                    return createSquareTable(layout.users, department);
+
+                case 'building':
+                    return createDepartmentBuilding(layout.users, department);
+
+                default:
+                    return container;
+            }
+        }
+
+        // Create single user table
+        function createSingleUserTable(user, department) {
+            const table = document.createElement('div');
+            table.className = 'round-table single-user';
+            table.innerHTML = createUserSeat(user);
+            table.onclick = () => showUserDetails(user);
+            return table;
+        }
+
+        // Create round table for 2-3 users
+        function createRoundTable(users, department) {
+            const table = document.createElement('div');
+            table.className = 'round-table multi-user';
+            table.style.width = '250px';
+            table.style.height = '250px';
+            table.style.position = 'relative';
+
+            // Position users around the circle
+            users.forEach((user, index) => {
+                const seat = document.createElement('div');
+                seat.className = 'round-seat';
+                seat.innerHTML = createUserSeat(user);
+                seat.onclick = (e) => {
+                    e.stopPropagation();
+                    showUserDetails(user);
+                };
+
+                // Calculate position around circle
+                const angle = (index * 360 / users.length) * (Math.PI / 180);
+                const radius = 80;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+
+                seat.style.position = 'absolute';
+                seat.style.left = `calc(50% + ${x}px - 40px)`;
+                seat.style.top = `calc(50% + ${y}px - 40px)`;
+                seat.style.width = '80px';
+                seat.style.height = '80px';
+
+                table.appendChild(seat);
+            });
+
+            return table;
+        }
+
+        // Create square table for 4 users
+        function createSquareTable(users, department) {
+            const table = document.createElement('div');
+            table.className = 'square-table';
+
+            // Create seats for 4 users
+            for (let i = 0; i < 4; i++) {
+                const seat = document.createElement('div');
+                seat.className = 'table-seat';
+
+                if (i < users.length) {
+                    const user = users[i];
+                    seat.classList.add(user.status || 'offline');
+                    seat.innerHTML = createUserSeat(user);
+                    seat.onclick = (e) => {
+                        e.stopPropagation();
+                        showUserDetails(user);
+                    };
+                } else {
+                    seat.innerHTML = '<div style="opacity: 0.3; font-size: 0.8rem;">Empty</div>';
+                }
+
+                table.appendChild(seat);
+            }
+
+            return table;
+        }
+
+        // Create department building for 5+ users
+        function createDepartmentBuilding(users, department) {
+            const building = document.createElement('div');
+            building.className = 'department-building';
+            building.onclick = () => showBuildingDetails(users, department);
+
+            building.innerHTML = `
+                <div class="building-structure">
+                    <div class="building-floors">
+                        <div class="floor"></div>
+                        <div class="floor"></div>
+                        <div class="floor"></div>
+                    </div>
+                    <div class="building-label">
+                        <i class="fas fa-building"></i>
+                        <span>${department}</span>
+                        <div class="user-count">${users.length} Users</div>
+                    </div>
+                </div>
+            `;
+
+            return building;
+        }
+
+        // Create user seat HTML
+        function createUserSeat(user) {
+            const statusClass = user.status || 'offline';
+            return `
+                <div class="user-avatar">${user.username.charAt(0).toUpperCase()}</div>
+                <div class="user-name">${user.username}</div>
+                <div class="user-status ${statusClass}"></div>
+            `;
+        }
+
+        // Show user details modal
+        function showUserDetails(user) {
+            const modal = document.getElementById('userModal');
+            const title = document.getElementById('modalTitle');
+            const details = document.getElementById('userDetails');
+
+            title.textContent = user.username;
+
+            const lastActivity = user.last_activity ? new Date(user.last_activity).toLocaleString() : 'Never';
+            const lastLogin = user.last_login ? new Date(user.last_login).toLocaleString() : 'Never';
+
+            details.innerHTML = `
+                <div class="detail-item">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value">${user.email}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Department:</span>
+                    <span class="detail-value">${user.department || 'GENERAL'}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Status:</span>
+                    <span class="detail-value" style="color: ${getStatusColor(user.status)}">${(user.status || 'offline').toUpperCase()}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Role:</span>
+                    <span class="detail-value">${user.is_admin ? 'Administrator' : 'User'}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Last Activity:</span>
+                    <span class="detail-value">${lastActivity}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Last Login:</span>
+                    <span class="detail-value">${lastLogin}</span>
+                </div>
+            `;
+
+            modal.style.display = 'flex';
+        }
+
+        // Close user modal
+        function closeUserModal() {
+            document.getElementById('userModal').style.display = 'none';
+        }
+
+        // Show building details modal
+        function showBuildingDetails(users, department) {
+            const modal = document.getElementById('buildingModal');
+            const title = document.getElementById('buildingModalTitle');
+            const interior = document.getElementById('buildingInterior');
+
+            title.textContent = `${department} Department Building (${users.length} Users)`;
+
+            // Clear interior
+            interior.innerHTML = '';
+
+            // Create tables inside building
+            const tablesData = createBuildingTables(users);
+
+            tablesData.forEach((tableData, index) => {
+                const tableElement = createInteriorTable(tableData, department, index);
+                interior.appendChild(tableElement);
+            });
+
+            modal.style.display = 'flex';
+        }
+
+        // Close building modal
+        function closeBuildingModal() {
+            document.getElementById('buildingModal').style.display = 'none';
+        }
+
+        // Create tables for building interior
+        function createBuildingTables(users) {
+            const tables = [];
+            let processedUsers = 0;
+
+            while (processedUsers < users.length) {
+                const remainingUsers = users.length - processedUsers;
+                let usersPerTable;
+                let tableType;
+
+                if (remainingUsers === 1) {
+                    usersPerTable = 1;
+                    tableType = 'single';
+                } else if (remainingUsers <= 3) {
+                    usersPerTable = remainingUsers;
+                    tableType = 'round';
+                } else {
+                    usersPerTable = 4;
+                    tableType = 'square';
+                }
+
+                tables.push({
+                    type: tableType,
+                    users: users.slice(processedUsers, processedUsers + usersPerTable)
+                });
+
+                processedUsers += usersPerTable;
+            }
+
+            return tables;
+        }
+
+        // Create interior table element
+        function createInteriorTable(tableData, department, index) {
+            const container = document.createElement('div');
+            container.className = 'interior-table';
+
+            if (tableData.type === 'single' || tableData.type === 'round') {
+                const table = document.createElement('div');
+                table.className = 'interior-round-table';
+
+                if (tableData.type === 'single') {
+                    const user = tableData.users[0];
+                    table.innerHTML = createInteriorUserSeat(user);
+                    table.onclick = () => showUserDetails(user);
+                } else {
+                    // Round table with multiple users
+                    table.style.position = 'relative';
+                    tableData.users.forEach((user, userIndex) => {
+                        const seat = document.createElement('div');
+                        seat.className = `interior-seat ${user.status || 'offline'}`;
+                        seat.innerHTML = createInteriorUserSeat(user);
+                        seat.onclick = (e) => {
+                            e.stopPropagation();
+                            showUserDetails(user);
+                        };
+
+                        // Position around circle
+                        const angle = (userIndex * 360 / tableData.users.length) * (Math.PI / 180);
+                        const radius = 35;
+                        const x = Math.cos(angle) * radius;
+                        const y = Math.sin(angle) * radius;
+
+                        seat.style.position = 'absolute';
+                        seat.style.left = `calc(50% + ${x}px - 20px)`;
+                        seat.style.top = `calc(50% + ${y}px - 20px)`;
+                        seat.style.width = '40px';
+                        seat.style.height = '40px';
+
+                        table.appendChild(seat);
+                    });
+                }
+
+                container.appendChild(table);
+            } else {
+                // Square table
+                const table = document.createElement('div');
+                table.className = 'interior-square-table';
+
+                for (let i = 0; i < 4; i++) {
+                    const seat = document.createElement('div');
+                    seat.className = 'interior-seat';
+
+                    if (i < tableData.users.length) {
+                        const user = tableData.users[i];
+                        seat.classList.add(user.status || 'offline');
+                        seat.innerHTML = createInteriorUserSeat(user);
+                        seat.onclick = (e) => {
+                            e.stopPropagation();
+                            showUserDetails(user);
+                        };
+                    } else {
+                        seat.innerHTML = '<div style="opacity: 0.3; font-size: 0.6rem;">Empty</div>';
+                    }
+
+                    table.appendChild(seat);
+                }
+
+                container.appendChild(table);
+            }
+
+            return container;
+        }
+
+        // Create interior user seat HTML
+        function createInteriorUserSeat(user) {
+            return `
+                <div class="interior-user-avatar">${user.username.charAt(0).toUpperCase()}</div>
+                <div class="interior-user-name">${user.username}</div>
+                <div class="user-status ${user.status || 'offline'}"></div>
+            `;
+        }
+
+        // Get status color
+        function getStatusColor(status) {
+            switch (status) {
+                case 'online': return '#00ff88';
+                case 'break': return '#ffaa00';
+                case 'offline': return '#ff4444';
+                default: return '#ffffff';
+            }
+        }
+
+        // Auto-refresh data every 30 seconds
+        function startAutoRefresh() {
+            setInterval(() => {
+                loadUsers();
+            }, 30000);
+        }
+
+        // Create single 3D workstation
+        function createSingle3DWorkstation(user, color) {
+            const workstation = document.createElement('div');
+            workstation.className = 'workstation-3d';
+            workstation.style.position = 'relative';
+            workstation.style.width = '150px';
+            workstation.style.height = '120px';
+
+            workstation.innerHTML = `
+                <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);">
+                    <img src="/static/images/holographic/desk-hologram.svg" alt="Holographic Desk" style="width: 120px; height: 80px;">
+                </div>
+                <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);">
+                    <img src="/static/images/holographic/chair-hologram.svg" alt="Holographic Chair" style="width: 60px; height: 80px;">
+                </div>
+                <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%);">
+                    <img src="/static/images/holographic/laptop-hologram.svg" alt="Holographic Laptop" style="width: 80px; height: 60px;">
+                </div>
+                <div style="position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 10;">
+                    <img src="/static/images/holographic/avatar-${user.status || 'offline'}.svg" alt="Holographic Avatar" style="width: 60px; height: 80px;">
+                    <div style="position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; color: ${color}; text-shadow: 0 0 10px ${color}; text-align: center; white-space: nowrap;">
+                        ${user.username}
+                    </div>
+                </div>
+            `;
+
+            workstation.onclick = (e) => {
+                e.stopPropagation();
+                showUserDetails(user);
+            };
+
+            return workstation;
+        }
+
+        // Create round 3D table
+        function createRound3DTable(users, color) {
+            const table = document.createElement('div');
+            table.className = 'round-table-3d';
+            table.style.position = 'relative';
+            table.style.width = '180px';
+            table.style.height = '150px';
+
+            // Add holographic table
+            table.innerHTML = `
+                <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);">
+                    <img src="/static/images/holographic/round-table-hologram.svg" alt="Holographic Round Table" style="width: 150px; height: 120px;">
+                </div>
+            `;
+
+            // Position avatars around the table
+            users.forEach((user, index) => {
+                const avatar = document.createElement('div');
+                avatar.style.position = 'absolute';
+                avatar.style.width = '60px';
+                avatar.style.height = '80px';
+
+                // Calculate position around circle
+                const angle = (index * 360 / users.length) * (Math.PI / 180);
+                const radius = 70;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+
+                avatar.style.left = `calc(50% + ${x}px - 30px)`;
+                avatar.style.top = `calc(50% + ${y}px - 40px)`;
+
+                avatar.innerHTML = `
+                    <img src="/static/images/holographic/avatar-${user.status || 'offline'}.svg" alt="Holographic Avatar" style="width: 60px; height: 80px;">
+                    <div style="position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: ${color}; text-shadow: 0 0 10px ${color}; text-align: center; white-space: nowrap;">
+                        ${user.username}
+                    </div>
+                `;
+
+                avatar.onclick = (e) => {
+                    e.stopPropagation();
+                    showUserDetails(user);
+                };
+
+                table.appendChild(avatar);
+            });
+
+            return table;
+        }
+
+        // Create square 3D table
+        function createSquare3DTable(users, color) {
+            const table = document.createElement('div');
+            table.className = 'square-table-3d';
+
+            table.style.position = 'relative';
+            table.style.width = '180px';
+            table.style.height = '150px';
+
+            // Add holographic square table
+            table.innerHTML = `
+                <div style="position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);">
+                    <img src="/static/images/holographic/square-table-hologram.svg" alt="Holographic Square Table" style="width: 150px; height: 120px;">
+                </div>
+            `;
+
+            // Position avatars at corners
+            const positions = [
+                { x: -60, y: -50 }, // top-left
+                { x: 60, y: -50 },  // top-right
+                { x: -60, y: 50 },  // bottom-left
+                { x: 60, y: 50 }    // bottom-right
+            ];
+
+            users.forEach((user, index) => {
+                if (index < 4) {
+                    const avatar = document.createElement('div');
+                    avatar.style.position = 'absolute';
+                    avatar.style.width = '60px';
+                    avatar.style.height = '80px';
+
+                    const pos = positions[index];
+                    avatar.style.left = `calc(50% + ${pos.x}px - 30px)`;
+                    avatar.style.top = `calc(50% + ${pos.y}px - 40px)`;
+
+                    avatar.innerHTML = `
+                        <img src="/static/images/holographic/avatar-${user.status || 'offline'}.svg" alt="Holographic Avatar" style="width: 60px; height: 80px;">
+                        <div style="position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: ${color}; text-shadow: 0 0 10px ${color}; text-align: center; white-space: nowrap;">
+                            ${user.username}
+                        </div>
+                    `;
+
+                    avatar.onclick = (e) => {
+                        e.stopPropagation();
+                        showUserDetails(user);
+                    };
+
+                    table.appendChild(avatar);
+                }
+            });
+
+            return table;
+        }
+
+        // Create 3D department office
+        function create3DDepartmentOffice(users, department, color) {
+            const office = document.createElement('div');
+            office.className = 'department-office-3d';
+
+            office.innerHTML = `
+                <div class="holographic-building">
+                    <div class="building-base"></div>
+                    <div class="building-structure-3d">
+                        <div class="holographic-floors">
+                            <div class="holographic-floor"></div>
+                            <div class="holographic-floor"></div>
+                            <div class="holographic-floor"></div>
+                        </div>
+                    </div>
+                    <div class="building-top"></div>
+                </div>
+            `;
+
+            office.onclick = (e) => {
+                e.stopPropagation();
+                showBuildingDetails(users, department);
+            };
+
+            return office;
+        }
+
+        // Focus on specific department
+        function focusDepartment(department, users, color) {
+            // Create focused view modal
+            const modal = document.createElement('div');
+            modal.className = 'user-modal';
+            modal.style.display = 'flex';
+
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 600px; width: 90%;">
+                    <div class="modal-header">
+                        <h2 class="modal-title" style="color: ${color};">${department} Department</h2>
+                        <button class="close-btn" onclick="this.parentElement.parentElement.parentElement.remove()">&times;</button>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                            ${users.map(user => `
+                                <div style="background: rgba(0, 0, 0, 0.3); border-radius: 10px; padding: 15px; text-align: center; cursor: pointer;" onclick="showUserDetails({id: ${user.id}, username: '${user.username}', email: '${user.email}', status: '${user.status}', department: '${user.department}', last_activity: '${user.last_activity}', last_login: '${user.last_login}'})">
+                                    <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #00ff88, #00aaff); display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; margin: 0 auto 10px;">
+                                        ${user.username.charAt(0).toUpperCase()}
+                                    </div>
+                                    <h4 style="color: ${color}; margin-bottom: 5px;">${user.username}</h4>
+                                    <p style="font-size: 0.8rem; opacity: 0.8; color: ${getStatusColor(user.status)};">${(user.status || 'offline').toUpperCase()}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            createParticles();
+            loadUsers();
+            startAutoRefresh();
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function (event) {
+            const userModal = document.getElementById('userModal');
+            const buildingModal = document.getElementById('buildingModal');
+
+            if (event.target === userModal) {
+                closeUserModal();
+            }
+            if (event.target === buildingModal) {
+                closeBuildingModal();
+            }
+        }
+    </script>
+</body>
+
+</html>
